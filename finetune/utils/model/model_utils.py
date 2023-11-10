@@ -23,20 +23,17 @@ def create_hf_model(
     # https://huggingface.co/docs/transformers/main_classes/deepspeed#nontrainer-deepspeed-integration
     if ds_config is not None and ds_config["zero_optimization"]["stage"] == 3:
         HfDeepSpeedConfig(ds_config)
-    else:
-        pass
-
     if not eval_mode:
         model = model_class.from_pretrained(
             model_name_or_path,
-            from_tf=bool(".ckpt" in model_name_or_path),
+            from_tf=".ckpt" in model_name_or_path,
             config=model_config,
             trust_remote_code=True,
         )
     else:
         model = model_class.from_pretrained(
             model_name_or_path,
-            from_tf=bool(".ckpt" in model_name_or_path),
+            from_tf=".ckpt" in model_name_or_path,
             config=model_config,
             trust_remote_code=True,
             device_map="auto",
@@ -50,9 +47,7 @@ def create_hf_model(
         int(8 * math.ceil(len(tokenizer) / 8.0))
     )  # make the vocab size multiple of 8
 
-    print("length of tokenizer is {}".format(len(tokenizer)))
-    print(
-        "resize_token_embeddings is {}".format(int(8 * math.ceil(len(tokenizer) / 8.0)))
-    )
+    print(f"length of tokenizer is {len(tokenizer)}")
+    print(f"resize_token_embeddings is {int(8 * math.ceil(len(tokenizer) / 8.0))}")
 
     return model
