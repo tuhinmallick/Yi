@@ -6,7 +6,7 @@ from datasets import load_dataset
 # follow in order to have a unified API and unified data format.
 class PromptRawDataset(object):
     def __init__(self, output_path, seed, local_rank, dataset_name):
-        print("init PromptRawDataset with dataname {}".format(dataset_name))
+        print(f"init PromptRawDataset with dataname {dataset_name}")
         self.output_path = output_path
         self.seed = seed
         self.local_rank = local_rank
@@ -42,18 +42,16 @@ class DahoasRmstaticDataset(PromptRawDataset):
     def __init__(self, output_path, seed, local_rank, dataset_name):
         print("init DahoasRMStaicDataset")
         super().__init__(output_path, seed, local_rank, dataset_name)
-        print("loading at dataset_name {}".format(dataset_name))
+        print(f"loading at dataset_name {dataset_name}")
         self.raw_datasets = load_dataset(
             "parquet",
             data_files={
-                "train": dataset_name
-                + "/data/train-00000-of-00001-2a1df75c6bce91ab.parquet",
-                "test": dataset_name
-                + "/data/test-00000-of-00001-8c7c51afc6d45980.parquet",
+                "train": f"{dataset_name}/data/train-00000-of-00001-2a1df75c6bce91ab.parquet",
+                "test": f"{dataset_name}/data/test-00000-of-00001-8c7c51afc6d45980.parquet",
             },
         )
-        self.dataset_name = "Dahoas/rm-static"
         self.dataset_name_clean = "Dahoas_rm_static"
+        self.dataset_name = "Dahoas/rm-static"
         print("init rm-static dataset finished")
 
     def get_train_data(self):
@@ -86,8 +84,8 @@ class LocalJsonFileDataset(PromptRawDataset):
         self.raw_datasets = load_dataset(
             "json",
             data_files={
-                "train": chat_path + "/data/train.json",
-                "eval": chat_path + "/data/eval.json",
+                "train": f"{chat_path}/data/train.json",
+                "eval": f"{chat_path}/data/eval.json",
             },
         )
 
@@ -97,28 +95,20 @@ class LocalJsonFileDataset(PromptRawDataset):
         return None
 
     def get_eval_data(self):
-        if self.raw_datasets["eval"] is not None:
-            return self.raw_datasets["eval"]
-        return None
+        return None if self.raw_datasets["eval"] is None else self.raw_datasets["eval"]
 
     # The prompt should be in the format of: " Human: " + actual_prompt_sentence + " Assistant:"
     def get_prompt(self, sample):
-        if sample["prompt"] is not None:
-            return " " + sample["prompt"]
-        return None
+        return " " + sample["prompt"] if sample["prompt"] is not None else None
 
     # The chosen response should be in the format of: " " + actual_response_sentence
     def get_chosen(self, sample):
-        if sample["chosen"] is not None:
-            return " " + sample["chosen"]
-        return None
+        return " " + sample["chosen"] if sample["chosen"] is not None else None
 
     # The rejected response should be in the format of: " " + actual_response_sentence
     # If the dataset does not have rejected response, return None
     def get_rejected(self, sample):
-        if sample["rejected"] is not None:
-            return " " + sample["rejected"]
-        return None
+        return " " + sample["rejected"] if sample["rejected"] is not None else None
 
     def get_prompt_and_chosen(self, sample):
         if sample["prompt"] is not None and sample["chosen"] is not None:
@@ -134,14 +124,14 @@ class LocalJsonFileDataset(PromptRawDataset):
 class YiDataset(PromptRawDataset):
     def __init__(self, output_path, seed, local_rank, dataset_name, chat_path):
         super().__init__(output_path, seed, local_rank, dataset_name)
-        print("data path is {}".format(chat_path))
+        print(f"data path is {chat_path}")
         self.dataset_name = "yi"
         self.dataset_name_clean = "yi"
         self.raw_datasets = load_dataset(
             "json",
             data_files={
-                "train": chat_path + "/data/train.jsonl",
-                "eval": chat_path + "/data/eval.jsonl",
+                "train": f"{chat_path}/data/train.jsonl",
+                "eval": f"{chat_path}/data/eval.jsonl",
             },
         )
 
@@ -151,14 +141,10 @@ class YiDataset(PromptRawDataset):
         return None
 
     def get_eval_data(self):
-        if self.raw_datasets["eval"] is not None:
-            return self.raw_datasets["eval"]
-        return None
+        return None if self.raw_datasets["eval"] is None else self.raw_datasets["eval"]
     
     def get_prompt(self, sample):
-        if sample["prompt"] is not None:
-            return " " + sample["prompt"]
-        return None
+        return " " + sample["prompt"] if sample["prompt"] is not None else None
 
     def get_prompt_and_chosen(self, sample):
         if sample["prompt"] is not None and sample["chosen"] is not None:

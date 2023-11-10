@@ -70,9 +70,7 @@ def parse_args():
     )
     parser.add_argument("--eos", type=str, default="<|endoftext|>")
 
-    args = parser.parse_args()
-
-    return args
+    return parser.parse_args()
 
 
 def generate(
@@ -93,10 +91,11 @@ def generate(
         inputs.input_ids, max_new_tokens=max_new_tokens, eos_token_id=stop_token_id
     )
 
-    result = tokenizer.batch_decode(
-        generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False
+    return tokenizer.batch_decode(
+        generate_ids,
+        skip_special_tokens=True,
+        clean_up_tokenization_spaces=False,
     )
-    return result
 
 
 def print_utils(gen_output):

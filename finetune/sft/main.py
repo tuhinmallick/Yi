@@ -211,9 +211,7 @@ def parse_args():
         "--print_loss", action="store_true", help="Prints loss at each step."
     )
     parser = deepspeed.add_config_arguments(parser)
-    args = parser.parse_args()
-
-    return args
+    return parser.parse_args()
 
 
 def main():
@@ -355,7 +353,7 @@ def main():
     # Train!
     print_rank_0("***** Running training *****", args.global_rank)
     print_rank_0(
-        f"***** Evaluating perplexity, Epoch {0}/{args.num_train_epochs} *****",
+        f"***** Evaluating perplexity, Epoch 0/{args.num_train_epochs} *****",
         args.global_rank,
     )
     perplexity = evaluation(model, eval_dataloader)

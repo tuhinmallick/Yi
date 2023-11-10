@@ -40,8 +40,7 @@ def parse_inputs():
         default="<|endoftext|>",
         help="End of sentence token",
     )
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def main(args):
